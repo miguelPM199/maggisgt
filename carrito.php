@@ -45,6 +45,27 @@ foreach ($_SESSION['carrito'] as $item) {
     $total += $item['precio'] * $item['cantidad'];
 }
 
+// Procesar pago personalizado
+$mensaje_error = "";
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pagar_personalizado'])) {
+    $correo = trim($_POST['correo'] ?? "");
+    $direccion = trim($_POST['direccion'] ?? "");
+    $metodo_pago = $_POST['metodo_pago'] ?? "";
+
+    if ($correo && $direccion && $metodo_pago) {
+        $mensaje = "Nueva compra en MaggiSGT:%0A";
+        $mensaje .= "Correo: $correo%0A";
+        $mensaje .= "Dirección: $direccion%0A";
+        $mensaje .= "Método de pago: $metodo_pago%0A";
+        $mensaje .= "Total: Q " . number_format($total, 2);
+        $whatsapp = "https://wa.me/50259252725?text=" . $mensaje;
+        header("Location: $whatsapp");
+        exit;
+    } else {
+        $mensaje_error = "Por favor, completa todos los campos.";
+    }
+}
+
 // URL de PayPal (reemplaza con tu enlace real de PayPal)
 $paypal_url = "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=tu-correo@paypal.com&currency_code=GTQ&amount=" . number_format($total, 2, '.', '') . "&item_name=Compra+MaggiSGT";
 ?>
@@ -119,6 +140,15 @@ $paypal_url = "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=tu-cor
             color: #111;
         }
     </style>
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+    function onSignIn(response) {
+        // Decodifica el JWT para obtener el correo
+        const data = JSON.parse(atob(response.credential.split('.')[1]));
+        document.getElementById('correo').value = data.email;
+    }
+    </script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
@@ -202,6 +232,41 @@ $paypal_url = "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=tu-cor
                         <a href="<?php echo $paypal_url; ?>" target="_blank" class="paypal-btn w-100 mb-2">
                             <i class="bi bi-paypal"></i> Finalizar compra con PayPal
                         </a>
+                        <form method="post" class="mt-3">
+                            <h5 class="mb-2"><i class="bi bi-person-circle"></i> Tus datos para la entrega</h5>
+                            <!-- Google Sign-In -->
+                            <div id="g_id_onload"
+                                 data-client_id="TU_CLIENT_ID_DE_GOOGLE"
+                                 data-context="signin"
+                                 data-ux_mode="popup"
+                                 data-callback="onSignIn"
+                                 data-auto_prompt="false">
+                            </div>
+                            <div class="g_id_signin mb-2" data-type="standard"></div>
+                            <?php if ($mensaje_error): ?>
+                                <div class="alert alert-danger py-1"><?php echo $mensaje_error; ?></div>
+                            <?php endif; ?>
+                            <div class="mb-2">
+                                <label for="correo" class="form-label">Correo electrónico</label>
+                                <input type="email" class="form-control" id="correo" name="correo" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="direccion" class="form-label">Dirección de entrega</label>
+                                <input type="text" class="form-control" id="direccion" name="direccion" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="metodo_pago" class="form-label">Método de pago</label>
+                                <select class="form-select" id="metodo_pago" name="metodo_pago" required>
+                                    <option value="">Selecciona un método</option>
+                                    <option value="PayPal">PayPal</option>
+                                    <option value="Contra entrega">Pago contra entrega</option>
+                                    <option value="Tarjeta">Tarjeta de débito/crédito</option>
+                                </select>
+                            </div>
+                            <button type="submit" name="pagar_personalizado" class="btn btn-success w-100">
+                                <i class="bi bi-cash-coin"></i> Pagar y notificar por WhatsApp
+                            </button>
+                        </form>
                     <?php else: ?>
                         <button class="btn btn-warning btn-checkout w-100" disabled>
                             <i class="bi bi-cash-coin"></i> Finalizar compra
@@ -213,19 +278,3 @@ $paypal_url = "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=tu-cor
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="index.php">MaggiSGT</a>
-        <div class="dropdown ms-auto">
-            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="seguirComprandoDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-arrow-left"></i> Seguir comprando
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="seguirComprandoDropdown">
-                <li><a class="dropdown-item" href="index.php"><i class="bi bi-house"></i> Página principal</a></li>
-                <li><a class="dropdown-item" href="productos_gt.php"><i class="bi bi-bag"></i> Productos Guatemaltecos</a></li>
-                <li><a class="dropdown-item" href="productos_mx.php"><i class="bi bi-bag"></i> Productos Mexicanos</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
