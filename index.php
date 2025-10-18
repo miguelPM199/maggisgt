@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 ?>
 <!DOCTYPE html>
@@ -6,6 +7,7 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <title>MaggiSGT - Inicio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
@@ -13,6 +15,7 @@ session_start();
             padding-top: 60px;
             background: linear-gradient(135deg, #1e2022 0%, #232526 100%);
             min-height: 100vh;
+            color: #fff !important;
         }
         .navbar {
             background: linear-gradient(90deg, #232526 0%, #414345 100%) !important;
@@ -25,14 +28,16 @@ session_start();
         }
         .btn-outline-success, .btn-outline-primary, .btn-outline-danger, .btn-outline-warning, .btn-outline-secondary {
             border-width: 2px;
-        }
-        .btn-outline-success {
-            color: #e7c873;
+            color: #fff !important;
             border-color: #e7c873;
         }
-        .btn-outline-success:hover {
-            background: #e7c873;
-            color: #232526;
+        .btn-outline-success:hover,
+        .btn-outline-primary:hover,
+        .btn-outline-danger:hover,
+        .btn-outline-warning:hover,
+        .btn-outline-secondary:hover {
+            background: #e7c873 !important;
+            color: #232526 !important;
         }
         .dropdown-menu {
             min-width: 300px;
@@ -45,88 +50,59 @@ session_start();
             color: #fff;
         }
         .dropdown-menu .btn-primary {
-            background: linear-gradient(90deg, #e7c873 0%, #bfa14a 100%);
+            background: linear-gradient(90deg, #e7c873 0%, #f09819 100%);
             border: none;
             color: #232526;
             font-weight: 700;
         }
         .dropdown-menu .btn-primary:hover {
-            background: linear-gradient(90deg, #bfa14a 0%, #e7c873 100%);
+            background: linear-gradient(90deg, #f09819 0%, #e7c873 100%);
             color: #232526;
         }
         .btn {
             font-weight: 600;
             letter-spacing: 1px;
+            color: #fff !important;
         }
-        .btn-primary {
-            background: linear-gradient(90deg, #e7c873 0%, #bfa14a 100%);
-            border: none;
-            color: #232526;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(90deg, #bfa14a 0%, #e7c873 100%);
-            color: #232526;
-        }
-        .btn-secondary {
-            background: linear-gradient(90deg, #434343 0%, #232526 100%);
-            border: none;
-            color: #e7c873;
-        }
-        .btn-secondary:hover {
-            background: linear-gradient(90deg, #232526 0%, #434343 100%);
-            color: #e7c873;
-        }
-        .btn-success {
-            background: linear-gradient(90deg, #e7c873 0%, #bfa14a 100%);
-            border: none;
-            color: #232526;
-        }
-        .btn-success:hover {
-            background: linear-gradient(90deg, #bfa14a 0%, #e7c873 100%);
-            color: #232526;
-        }
-        .btn-danger {
-            background: linear-gradient(90deg, #ff5858 0%, #f09819 100%);
-            border: none;
-            color: #fff;
-        }
-        .btn-danger:hover {
-            background: linear-gradient(90deg, #f09819 0%, #ff5858 100%);
-            color: #fff;
-        }
+        .btn-primary,
+        .btn-secondary,
+        .btn-success,
+        .btn-danger,
         .btn-warning {
-            background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+            background: linear-gradient(90deg, #e7c873 0%, #f09819 100%) !important;
             border: none;
-            color: #232526;
+            color: #232526 !important;
         }
+        .btn-primary:hover,
+        .btn-secondary:hover,
+        .btn-success:hover,
+        .btn-danger:hover,
         .btn-warning:hover {
-            background: linear-gradient(90deg, #ffd200 0%, #f7971e 100%);
-            color: #232526;
+            background: linear-gradient(90deg, #f09819 0%, #e7c873 100%) !important;
+            color: #232526 !important;
         }
         .btn-outline-primary {
-            color: #e7c873;
+            color: #fff !important;
             border-color: #e7c873;
         }
         .btn-outline-primary:hover {
-            background: #e7c873;
-            color: #232526;
+            background: #e7c873 !important;
+            color: #232526 !important;
         }
         .btn-outline-secondary {
-            color: #bfa14a;
-            border-color: #bfa14a;
+            color: #fff !important;
+            border-color: #e7c873;
         }
         .btn-outline-secondary:hover {
-            background: #bfa14a;
-            color: #232526;
+            background: #e7c873 !important;
+            color: #232526 !important;
         }
         .badge.bg-danger {
             background: linear-gradient(90deg, #ff5858 0%, #f09819 100%);
             color: #fff;
         }
-        h1, h4 {
-            color: #e7c873;
-            font-weight: 800;
-            letter-spacing: 1px;
+        h1, h4, .form-label, .form-text, label, .navbar, .navbar-brand, .dropdown-menu, .dropdown-menu .form-label, .dropdown-menu input, .dropdown-menu .btn-primary, .btn, .btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-warning {
+            color: #fff !important;
         }
         .btn, .dropdown-menu {
             box-shadow: 0 2px 8px rgba(231, 200, 115, 0.07);
@@ -143,6 +119,43 @@ session_start();
         }
         .fs-5 {
             font-size: 1.25rem !important;
+        }
+        /* Footer profesional */
+        footer {
+            background: linear-gradient(90deg,#232526 0%,#414345 100%);
+            color: #e7c873;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-size: 1.1rem;
+            box-shadow: 0 -2px 16px #0004;
+        }
+        /* Mejoras responsive */
+        @media (max-width: 991.98px) {
+            .row.g-3.mb-4 > div[class^="col-"] {
+                flex: 0 0 50%;
+                max-width: 50%;
+                margin-bottom: 1rem;
+            }
+        }
+        @media (max-width: 575.98px) {
+            .row.g-3.mb-4 > div[class^="col-"] {
+                flex: 0 0 100%;
+                max-width: 100%;
+                margin-bottom: 1rem;
+            }
+            .btn.fs-5, .btn.py-4 {
+                font-size: 1.4rem !important;
+                padding-top: 1.5rem !important;
+                padding-bottom: 1.5rem !important;
+            }
+            h1 {
+                font-size: 2rem !important;
+            }
+        }
+        /* Botones más grandes en móvil */
+        .btn.fs-5, .btn.py-4 {
+            font-size: 1.1rem;
         }
     </style>
 </head>
@@ -199,28 +212,28 @@ session_start();
     <div class="container mt-5">
         <h1 class="mb-4">Bienvenido a MaggiSGT</h1>
         <div class="row g-3 mb-4">
-            <div class="col-md-2">
-                <a href="quienes_somos.php" class="btn btn-primary w-100 h-100 py-4 fs-5">
+            <div class="col-md-2 col-6">
+                <a href="quienes_somos.php" class="btn w-100 h-100 py-4 fs-5" style="background:linear-gradient(90deg,#e7c873 0%, #f09819 100%)!important;">
                     Quiénes somos
                 </a>
             </div>
-            <div class="col-md-2">
-                <a href="contacto.php" class="btn btn-secondary w-100 h-100 py-4 fs-5">
+            <div class="col-md-2 col-6">
+                <a href="contacto.php" class="btn w-100 h-100 py-4 fs-5" style="background:linear-gradient(90deg,#e7c873 0%, #f09819 100%)!important;">
                     Contacto
                 </a>
             </div>
-            <div class="col-md-2">
-                <a href="productos_gt.php" class="btn btn-success w-100 h-100 py-4 fs-5">
+            <div class="col-md-2 col-6">
+                <a href="productos_gt.php" class="btn w-100 h-100 py-4 fs-5" style="background:linear-gradient(90deg,#e7c873 0%, #f09819 100%)!important;">
                     Productos Guatemaltecos
                 </a>
             </div>
-            <div class="col-md-2">
-                <a href="productos_mx.php" class="btn btn-danger w-100 h-100 py-4 fs-5">
+            <div class="col-md-2 col-6">
+                <a href="productos_mx.php" class="btn w-100 h-100 py-4 fs-5" style="background:linear-gradient(90deg,#e7c873 0%, #f09819 100%)!important;">
                     Productos Mexicanos
                 </a>
             </div>
-            <div class="col-md-2">
-                <a href="promociones.php" class="btn btn-warning w-100 h-100 py-4 fs-5">
+            <div class="col-md-2 col-6">
+                <a href="promociones.php" class="btn w-100 h-100 py-4 fs-5" style="background:linear-gradient(90deg,#b80000 0%,#ff2e2e 100%)!important;color:#fff;font-weight:800;border:none;">
                     2x1
                 </a>
             </div>
@@ -259,5 +272,11 @@ session_start();
         </div>
     </div>
 
+    <!-- Footer profesional -->
+    <footer class="mt-5 py-4">
+        &copy; <?php echo date('Y'); ?> MaggiSGT. Todos los derechos reservados. Desarrollado por MaggiSGT.
+    </footer>
     <!-- Bootstrap JS para dropdown y carrusel -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

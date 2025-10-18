@@ -55,7 +55,7 @@
                 <a href="https://wa.me/50259252725?text=¡Hola!%20Quiero%20más%20información%20sobre%20MaggiSGT" target="_blank" class="icon-btn" title="WhatsApp">
                     <i class="bi bi-whatsapp"></i> 59252725
                 </a>
-                <a href="https://www.tiktok.com/@tucuenta" target="_blank" class="icon-btn tiktok" title="TikTok">
+                <a href="https://www.tiktok.com/@maggisgt" target="_blank" class="icon-btn tiktok" title="TikTok">
                     <i class="bi bi-tiktok"></i>
                 </a>
             </div>

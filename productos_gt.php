@@ -1,60 +1,52 @@
 <?php
 
+
 session_start();
 
-
-
-// Simulación de productos (20 espacios, 5 con precios y 7 con imágenes)
-$precios_demo = [99.99, 130.00, 150.00, 160.00, 85.00, 200.00];
-$imagenes_demo = [
-    "assets/img/img1.jpeg",
-    "assets/img/img2.jpeg",
-    "assets/img/img3.jpeg",
-    "assets/img/img4.jpeg",
-    "assets/img/img5.jpeg",
-    "assets/img/img6.jpeg",
-    "assets/img/img7.jpeg"
-];
-$productos = [];
-for ($i = 1; $i <= 20; $i++) {
-    $productos[] = [
-        "id" => $i,
-        "nombre" => "Producto Guatemalteco $i",
-        "precio" =>  ($i <= count($precios_demo)) ? $precios_demo[$i - 1] : "",
-        "imagen" => ($i <= 7) ? $imagenes_demo[$i - 1] : ""
-    ];
+// Conexión a la base de datos (ajusta el puerto si es necesario)
+$mysqli = new mysqli("localhost", "root", "", "maggisgt", 3307);
+if ($mysqli->connect_errno) {
+    die("Error de conexión a MySQL: " . $mysqli->connect_error);
 }
 
-// Agregar al carrito
+// Agregar al carrito (corregido: busca el producto en la BD y usa PRG)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
     $producto_id = intval($_POST['producto_id']);
-    foreach ($productos as $prod) {
-        if ($prod['id'] === $producto_id && $prod['precio'] !== "") {
-            // Buscar si ya está en el carrito
-            $encontrado = false;
-            if (!isset($_SESSION['carrito'])) $_SESSION['carrito'] = [];
-            foreach ($_SESSION['carrito'] as &$item) {
-                if ($item['id'] === $producto_id) {
-                    $item['cantidad'] += 1;
-                    $encontrado = true;
-                    break;
-                }
+    $stmt = $mysqli->prepare("SELECT * FROM productos_gt WHERE id=?");
+    $stmt->bind_param("i", $producto_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $prod = $result->fetch_assoc();
+    $stmt->close();
+    if ($prod && $prod['precio'] !== "") {
+        $encontrado = false;
+        if (!isset($_SESSION['carrito'])) $_SESSION['carrito'] = [];
+        foreach ($_SESSION['carrito'] as &$item) {
+            if ($item['id'] == $producto_id) {
+                $item['cantidad'] += 1;
+                $encontrado = true;
+                break;
             }
-            unset($item);
-            if (!$encontrado) {
-                $_SESSION['carrito'][] = [
-                    "id" => $prod['id'],
-                    "nombre" => $prod['nombre'],
-                    "precio" => $prod['precio'],
-                    "cantidad" => 1
-                ];
-            }
-            break;
+        }
+        unset($item);
+        if (!$encontrado) {
+            $_SESSION['carrito'][] = [
+                "id" => $prod['id'],
+                "nombre" => $prod['nombre'],
+                "precio" => $prod['precio'],
+                "cantidad" => 1
+            ];
         }
     }
-    // Mostrar notificación de producto agregado
+    header("Location: productos_gt.php?added=1");
+    exit;
+}
+if (isset($_GET['added'])) {
     $showNotification = true;
 }
+
+// Obtener productos guatemaltecos desde la base de datos
+$productos = $mysqli->query("SELECT * FROM productos_gt")->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -66,121 +58,179 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
         :root {
-            --color-primary: #4c6ca4ff;
-            --color-primary-dark: #bfa14a;
-            --color-dark: #232526;
-            --color-light: #f8f9fa;
+            --azul-gt: #0097d7;
+            --azul-oscuro-gt: #005fa3;
+            --blanco-gt: #fff;
+            --amarillo-gt: #ffd600;
+            --verde-gt: #3bb54a;
+            --gris-gt: #232526;
+            --dorado-gt: #e7c873;
+            --rojo-maggi: #e30613;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
-            color: var(--color-light);
+            background: linear-gradient(135deg, var(--azul-gt) 0%, var(--blanco-gt) 100%);
+            color: var(--gris-gt);
             padding-top: 80px;
             min-height: 100vh;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
         }
-        
+
         .navbar {
-            background: linear-gradient(90deg, var(--color-dark) 0%, #333 100%) !important;
-            border-bottom: 2px solid var(--color-primary);
+            background: linear-gradient(90deg, var(--azul-oscuro-gt) 0%, var(--azul-gt) 100%) !important;
+            border-bottom: 3px solid var(--amarillo-gt);
         }
-        
+
         .navbar-brand {
-            font-weight: 800;
-            color: var(--color-primary) !important;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
+            font-size: 2rem;
+            text-shadow: 2px 2px 8px #fff, 0 0 2px var(--azul-oscuro-gt);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
-        .page-title {
-            color: var(--color-primary);
-            font-weight: 800;
+        .navbar-brand .maggi-gt-logo {
+            display: inline-block;
+            font-weight: 900;
+            font-size: 2rem;
             letter-spacing: 1px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--color-primary);
-            margin-bottom: 30px;
+            padding: 0 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #fff8;
         }
-        
+        .navbar-brand .maggi-gt-logo .maggi {
+            color: var(--rojo-maggi);
+            background: var(--rojo-maggi);
+            padding: 2px 8px;
+            border-radius: 6px 0 0 6px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(5, 0, 0, 0.53);
+        }
+        .navbar-brand .maggi-gt-logo .s {
+            color: #d45555ff;
+            background: #fff;
+            padding: 2px 8px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #090909ff;
+        }
+        .navbar-brand .maggi-gt-logo .gt {
+            color: var(--verde-gt);
+            background: var(--verde-gt);
+            padding: 2px 8px;
+            border-radius: 0 6px 6px 0;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(5, 4, 4, 0.53);
+        }
+
+        .navbar .btn-outline-warning {
+            border-color: var(--amarillo-gt);
+            color: var(--amarillo-gt);
+        }
+        .navbar .btn-outline-warning:hover {
+            background: var(--amarillo-gt);
+            color: var(--azul-oscuro-gt);
+        }
+
+        .page-title {
+            color: var(--azul-oscuro-gt);
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 8px #fff, 0 0 2px var(--azul-gt);
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--amarillo-gt);
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, var(--blanco-gt) 60%, var(--azul-gt) 100%);
+            border-radius: 0 0 30px 30px;
+        }
+
         .product-card {
             border-radius: 22px;
-            box-shadow: 0 8px 32px rgba(231, 200, 115, 0.18);
-            background: linear-gradient(135deg, #346762ff 60%, #73d8e7ff 100%);
-            color: #e7c873;
+            box-shadow: 0 8px 32px rgba(0, 151, 215, 0.18);
+            background: linear-gradient(135deg, var(--blanco-gt) 60%, var(--azul-gt) 100%);
+            color: var(--azul-oscuro-gt);
             min-height: 370px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             transition: transform 0.2s, box-shadow 0.2s;
-            border: 2px solid #e7c87333;
+            border: 2px solid var(--amarillo-gt);
             position: relative;
             overflow: hidden;
         }
-        
+
         .product-card:hover {
             transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 12px 36px rgba(231, 200, 115, 0.25);
-            border-color: #e7c873;
-            background: linear-gradient(135deg, #83a1e1ff 0%, #1280b7ff 100%);
-            color: #232526;
+            box-shadow: 0 12px 36px rgba(0, 151, 215, 0.25);
+            border-color: var(--verde-gt);
+            background: linear-gradient(135deg, var(--azul-gt) 0%, var(--blanco-gt) 100%);
+            color: var(--gris-gt);
         }
-        
+
         .product-img {
-            background: rgba(231, 200, 115, 0.08);
+            background: rgba(0, 151, 215, 0.08);
             border-radius: 16px 16px 0 0;
             height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 3rem;
-            color: #e7c873;
+            color: var(--azul-gt);
             margin-bottom: 1rem;
             overflow: hidden;
+            border-bottom: 2px solid var(--amarillo-gt);
         }
         .product-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: 12px;
+            border: 2px solid var(--azul-gt);
+            background: #fff;
         }
-        
+
         .product-card:hover .product-img {
-            color: #232526;
-            background: rgba(35, 37, 38, 0.15);
+            color: var(--verde-gt);
+            background: rgba(59, 181, 74, 0.15);
+            border-bottom: 2px solid var(--verde-gt);
         }
-        
+
         .product-card h5 {
-            font-weight: 700;
+            font-weight: 800;
             color: inherit;
+            text-shadow: 1px 1px 2px #fff;
         }
-        
+
         .product-card .text-muted {
-            color: #e7c873cc !important;
+            color: var(--azul-oscuro-gt) !important;
         }
-        
+
         .product-card:hover .text-muted {
-            color: #232526cc !important;
+            color: var(--verde-gt) !important;
         }
-        
+
         .add-cart-btn {
             border-radius: 10px;
-            font-weight: 600;
-            background: linear-gradient(90deg, #8edbb2ff 0%, #f8e19dff 100%);
-            color: #232526;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--amarillo-gt) 0%, var(--verde-gt) 100%);
+            color: var(--gris-gt);
             border: none;
             transition: background 0.2s, color 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 151, 215, 0.10);
         }
-        
+
         .add-cart-btn:disabled {
             background: #bfa14a55;
             color: #23252699;
             border: none;
         }
-        
+
         .add-cart-btn:hover:not(:disabled) {
-            background: linear-gradient(90deg, #a69667ff 0%, #0dcef0ff 100%);
-            color: #232526;
+            background: linear-gradient(90deg, var(--verde-gt) 0%, var(--amarillo-gt) 100%);
+            color: var(--azul-oscuro-gt);
         }
-        
+
         .go-cart-btn {
             position: fixed;
             bottom: 30px;
@@ -189,20 +239,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
             border-radius: 50px;
             font-size: 1.2rem;
             font-weight: 700;
-            background: linear-gradient(90deg, #e7c873 0%, #bfa14a 100%);
-            color: #232526;
+            background: linear-gradient(90deg, var(--amarillo-gt) 0%, var(--verde-gt) 100%);
+            color: var(--gris-gt);
             border: none;
             padding: 12px 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 151, 215, 0.15);
         }
-        
+
         .go-cart-btn:hover {
-            background: linear-gradient(90deg, #bfa14a 0%, #e7c873 100%);
-            color: #232526;
+            background: linear-gradient(90deg, var(--verde-gt) 0%, var(--amarillo-gt) 100%);
+            color: var(--azul-oscuro-gt);
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 6px 20px rgba(0, 151, 215, 0.25);
         }
-        
+
         .volver-btn {
             position: fixed;
             bottom: 30px;
@@ -211,24 +261,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
             border-radius: 50px;
             font-size: 1.2rem;
             font-weight: 700;
-            background: linear-gradient(90deg, #689fbbff 0%, #7373e7ff 100%);
-            color: #e7c873;
+            background: linear-gradient(90deg, var(--azul-gt) 0%, var(--azul-oscuro-gt) 100%);
+            color: var(--amarillo-gt);
             border: none;
             padding: 12px 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 151, 215, 0.15);
         }
-        
+
         .volver-btn:hover {
-            background: linear-gradient(90deg, #ef5d52ff 0%, #91c5dfff 100%);
-            color: #232526;
+            background: linear-gradient(90deg, var(--verde-gt) 0%, var(--azul-gt) 100%);
+            color: var(--blanco-gt);
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 6px 20px rgba(0, 151, 215, 0.25);
         }
-        
+
         .cart-badge {
             font-size: 0.7rem;
         }
-        
+
         @media (max-width: 991px) {
             .go-cart-btn, .volver-btn {
                 position: static;
@@ -236,7 +286,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
                 width: 100%;
                 display: block;
             }
-            
+
             .fixed-btn-container {
                 display: flex;
                 justify-content: space-between;
@@ -244,12 +294,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
                 bottom: 0;
                 left: 0;
                 right: 0;
-                background: var(--color-dark);
+                background: var(--azul-gt);
                 padding: 15px;
                 z-index: 1000;
-                box-shadow: 0 -4px 10px rgba(107, 214, 148, 0.3);
+                box-shadow: 0 -4px 10px rgba(0, 151, 215, 0.15);
             }
-            
+
             .go-cart-btn, .volver-btn {
                 position: static;
                 margin: 0;
@@ -257,28 +307,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
                 display: inline-block;
             }
         }
-        
+
         .notification {
             position: fixed;
             top: 100px;
             right: 20px;
-            background: var(--color-primary);
-            color: var(--color-dark);
+            background: var(--amarillo-gt);
+            color: var(--azul-oscuro-gt);
             padding: 15px 25px;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 151, 215, 0.18);
             z-index: 1050;
-            font-weight: 600;
+            font-weight: 700;
             transform: translateX(100%);
             transition: transform 0.3s ease-in-out;
+            border: 2px solid var(--verde-gt);
         }
-        
+
         .notification.show {
             transform: translateX(0);
+        }
+
+        /* Cinta bandera Guatemala */
+        .bandera-gt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 18px;
+            z-index: 2000;
+            display: flex;
+        }
+        .bandera-gt .franja {
+            flex: 1;
+            height: 100%;
+        }
+        .bandera-gt .azul { background: var(--azul-gt);}
+        .bandera-gt .blanco { background: var(--blanco-gt);}
+        .bandera-gt .amarillo {
+            background: repeating-linear-gradient(
+                45deg,
+                var(--amarillo-gt),
+                var(--amarillo-gt) 6px,
+                var(--blanco-gt) 6px,
+                var(--blanco-gt) 12px
+            );
         }
     </style>
 </head>
 <body>
+    <div class="bandera-gt">
+        <div class="franja azul"></div>
+        <div class="franja blanco"></div>
+        <div class="franja azul"></div>
+    </div>
     <?php if (isset($showNotification) && $showNotification): ?>
         <div class="notification" id="addedNotification"><i class="bi bi-cart-check"></i> Producto agregado al carrito</div>
     <?php endif; ?>
@@ -286,7 +368,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
     <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">
-                <i class="bi bi-star-fill"></i> MaggiSGT
+                <span class="maggi-gt-logo">
+                    <span class="maggi">Maggi</span><span class="s">S</span><span class="gt">GT</span>
+                </span>
             </a>
             <a href="carrito.php" class="btn btn-outline-warning position-relative">
                 <i class="bi bi-cart"></i> Carrito
@@ -306,9 +390,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
             <?php foreach ($productos as $producto): ?>
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                     <div class="product-card p-3">
-                        <div class="product-img mb-3">
+                        <div class="product-img mb-3" onclick="mostrarImagenModal('<?php echo htmlspecialchars($producto['imagen']); ?>')" style="cursor:pointer;">
                             <?php if ($producto['imagen']): ?>
-                                <img src="<?php echo $producto['imagen']; ?>" alt="Producto" />
+                                <img src="<?php echo htmlspecialchars($producto['imagen']); ?>" alt="Producto" />
                             <?php else: ?>
                                 <i class="bi bi-image"></i>
                             <?php endif; ?>
@@ -360,24 +444,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
                         notification.remove();
                     }, 300);
                 }, 3000);
-                <div class="modal fade" id="imagenModal" tabindex="-1" aria-labelledby="imagenModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content bg-dark">
-      <div class="modal-body text-center">
-        <img id="imagenModalSrc" src="" alt="Producto grande" style="max-width:100%;max-height:70vh;border-radius:18px;">
-      </div>
-      <div class="modal-footer border-0 justify-content-center">
-        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">
-          <i class="bi bi-x-lg"></i> Cerrar
-        </button>
+            }
+        });
+    </script>
+    <!-- Modal para imagen grande -->
+    <div class="modal fade" id="imagenModal" tabindex="-1" aria-labelledby="imagenModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-white">
+          <div class="modal-body text-center">
+            <img id="imagenModalSrc" src="" alt="Producto grande" style="max-width:100%;max-height:70vh;border-radius:18px;box-shadow:0 4px 24px #0097d7;">
+          </div>
+          <div class="modal-footer border-0 justify-content-center">
+            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+              <i class="bi bi-x-lg"></i> Cerrar
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-<script>
-function mostrarImagenModal(src) {
-    document.getElementById('imagenModalSrc').src = src;
-    var modal = new bootstrap.Modal(document.getElementById('imagenModal'));
-    modal.show();
-}
-</script>
+    <script>
+    function mostrarImagenModal(src) {
+        document.getElementById('imagenModalSrc').src = src;
+        var modal = new bootstrap.Modal(document.getElementById('imagenModal'));
+        modal.show();
+    }
+    </script>
+</body>
+</html>
