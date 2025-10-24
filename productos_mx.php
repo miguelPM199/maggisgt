@@ -1,6 +1,5 @@
 <?php
 
-
 session_start();
 
 // Conexión a la base de datos (ajusta el puerto si es necesario)
@@ -9,7 +8,7 @@ if ($mysqli->connect_errno) {
     die("Error de conexión a MySQL: " . $mysqli->connect_error);
 }
 
-// Agregar al carrito (corregido: busca el producto en la BD y usa PRG)
+// Agregar al carrito (PRG)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
     $producto_id = intval($_POST['producto_id']);
     $stmt = $mysqli->prepare("SELECT * FROM productos_mx WHERE id=?");
@@ -51,381 +50,289 @@ $productos = $mysqli->query("SELECT * FROM productos_mx")->fetch_all(MYSQLI_ASSO
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Productos Mexicanos - MaggiSGT</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
-        :root {
-            --verde-mx: #006341;
-            --blanco-mx: #fff;
-            --rojo-mx: #ce1126;
-            --dorado-mx: #e7c873;
-            --gris-mx: #232526;
-            --amarillo-mx: #ffd600;
+        :root{
+            --bg-1: #eb72d9ff;
+            --bg-2: #659ed6ff;
+            --bg-3: #232526;
+            --text: #e8eef1;
+            --card-glass: rgba(255,255,255,0.06);
+            --accent: #e7c873;
+            --muted: rgba(232,238,241,0.6);
+            --success: #3bb54a;
         }
+
+        html,body{height:100%}
         body {
-            background: linear-gradient(135deg, var(--verde-mx) 0%, var(--blanco-mx) 50%, var(--rojo-mx) 100%);
-            color: var(--gris-mx);
-            padding-top: 80px;
-            min-height: 100vh;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
+            margin:0;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+            color: var(--text);
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            padding-top: 86px;
         }
+
+        .main-wrap {
+            max-width:1200px;
+            margin:0 auto 80px;
+            padding:28px;
+            backdrop-filter: blur(6px) saturate(1.05);
+        }
+
         .navbar {
-            background: linear-gradient(90deg, var(--verde-mx) 0%, var(--blanco-mx) 50%, var(--rojo-mx) 100%) !important;
-            border-bottom: 3px solid var(--dorado-mx);
+            height:72px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+            border-bottom:1px solid rgba(255,255,255,0.04);
+            backdrop-filter: blur(6px);
+            z-index:1050;
         }
         .navbar-brand {
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 2rem;
-            text-shadow: 2px 2px 8px #fff, 0 0 2px var(--verde-mx);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            font-weight:800;
+            color:var(--text) !important;
+            letter-spacing:1.2px;
+            display:flex;
+            align-items:center;
+            gap:.6rem;
+            font-size:1.25rem;
         }
-        .navbar-brand .maggi-mx-logo {
-            display: inline-block;
-            font-weight: 900;
-            font-size: 2rem;
-            letter-spacing: 1px;
-            padding: 0 8px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(8, 27, 243, 0.53);
+        .logo-pill {
+            display:inline-flex;
+            align-items:center;
+            gap:.3rem;
+            padding:.25rem .6rem;
+            border-radius:8px;
+            background: linear-gradient(90deg, rgba(0,0,0,0.15), rgba(255,255,255,0.03));
+            font-weight:900;
+            color:var(--accent);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            transform: translateY(1cm); /* baja el logo 1 cm */
         }
-        .navbar-brand .maggi-mx-logo .maggi {
-            color: var(--rojo-mx);
-            background: var(--rojo-mx);
-            padding: 2px 8px;
-            border-radius: 6px 0 0 6px;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(21, 5, 248, 0.53);
+
+        /* baja el botón de carrito 1 cm */
+        .navbar .ms-auto .btn {
+            transform: translateY(1cm);
+            will-change: transform;
         }
-        .navbar-brand .maggi-mx-logo .s {
-            color: #fff;
-            background: #fff;
-            padding: 2px 8px;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px var(--rojo-mx);
+
+        /* opcional: revertir en pantallas muy pequeñas si causa overflow */
+        @media (max-width: 350px) {
+            .logo-pill,
+            .navbar .ms-auto .btn {
+                transform: translateY(0.6cm);
+            }
         }
-        .navbar-brand .maggi-mx-logo .mx {
-            color: var(--verde-mx);
-            background: var(--verde-mx);
-            padding: 2px 8px;
-            border-radius: 0 6px 6px 0;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(40, 3, 249, 0.53);
+
+        .hero-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+            border-radius:14px;
+            padding:18px 20px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+            border:1px solid rgba(255,255,255,0.04);
+            margin-bottom:22px;
         }
-        .navbar .btn-outline-warning {
-            border-color: var(--amarillo-mx);
-            color: var(--amarillo-mx);
-        }
-        .navbar .btn-outline-warning:hover {
-            background: var(--amarillo-mx);
-            color: var(--verde-mx);
-        }
-        .page-title {
-            color: var(--rojo-mx);
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 8px #fff, 0 0 2px var(--verde-mx);
-            padding-bottom: 10px;
-            border-bottom: 3px solid var(--dorado-mx);
-            margin-bottom: 30px;
-            background: linear-gradient(90deg, var(--blanco-mx) 60%, var(--rojo-mx) 100%);
-            border-radius: 0 0 30px 30px;
-        }
+        .hero-title { margin:0; font-weight:800; font-size:1.35rem; letter-spacing:.6px; }
+        .hero-sub { margin:6px 0 0; color:var(--muted); font-size:.95rem; }
+
+        .row-products { gap:1.4rem; }
+
         .product-card {
-            border-radius: 22px;
-            box-shadow: 0 8px 32px rgba(206, 17, 38, 0.18);
-            background: linear-gradient(135deg, var(--blanco-mx) 60%, var(--rojo-mx) 100%);
-            color: var(--verde-mx);
-            min-height: 370px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 2px solid var(--dorado-mx);
-            position: relative;
-            overflow: hidden;
+            border-radius:16px;
+            overflow:hidden;
+            padding:18px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border:1px solid rgba(255,255,255,0.04);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            min-height:360px;
+            transition: transform .22s ease, box-shadow .22s ease;
         }
-        .product-card:hover {
-            transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 12px 36px rgba(206, 17, 38, 0.25);
-            border-color: var(--verde-mx);
-            background: linear-gradient(135deg, var(--verde-mx) 0%, var(--blanco-mx) 100%);
-            color: var(--gris-mx);
-        }
+        .product-card:hover { transform: translateY(-8px); box-shadow: 0 22px 60px rgba(0,0,0,0.55); }
+
         .product-img {
-            background: rgba(206, 17, 38, 0.08);
-            border-radius: 16px 16px 0 0;
-            height: 140px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: var(--rojo-mx);
-            margin-bottom: 1rem;
-            overflow: hidden;
-            border-bottom: 2px solid var(--dorado-mx);
+            height:170px;
+            border-radius:12px;
+            overflow:hidden;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border:1px solid rgba(255,255,255,0.03);
+            margin-bottom:14px;
         }
-        .product-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 12px;
-            border: 2px solid var(--rojo-mx);
-            background: #fff;
-        }
-        .product-card:hover .product-img {
-            color: var(--verde-mx);
-            background: rgba(0, 99, 65, 0.15);
-            border-bottom: 2px solid var(--verde-mx);
-        }
-        .product-card h5 {
-            font-weight: 800;
-            color: inherit;
-            text-shadow: 1px 1px 2px #fff;
-        }
-        .product-card .text-muted {
-            color: var(--rojo-mx) !important;
-        }
-        .product-card:hover .text-muted {
-            color: var(--verde-mx) !important;
-        }
+        .product-img img { width:100%; height:100%; object-fit:cover; display:block; }
+
+        .product-name { font-weight:800; font-size:1.05rem; margin:0 0 6px; color:var(--text); }
+        .product-price { font-weight:700; color:var(--accent); font-size:1.05rem; white-space:nowrap; }
+        .product-desc { color:var(--muted); font-size:.92rem; margin-top:8px; min-height:42px; }
+
+        .card-footer { margin-top:12px; display:flex; gap:8px; align-items:center; justify-content:space-between; }
+
         .add-cart-btn {
-            border-radius: 10px;
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--amarillo-mx) 0%, var(--verde-mx) 100%);
-            color: var(--gris-mx);
-            border: none;
-            transition: background 0.2s, color 0.2s;
-            box-shadow: 0 2px 8px rgba(206, 17, 38, 0.10);
+            background: linear-gradient(90deg,var(--accent), #f09819);
+            color:#111;
+            font-weight:800;
+            border-radius:10px;
+            padding:.5rem .8rem;
+            border:none;
+            box-shadow: 0 6px 18px rgba(231,200,115,0.12);
         }
-        .add-cart-btn:disabled {
-            background: #bfa14a55;
-            color: #23252699;
-            border: none;
+        .add-cart-btn:disabled { opacity:.55; filter:grayscale(.3); }
+        .view-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.06);
+            color:var(--text);
+            padding:.38rem .6rem;
+            border-radius:8px;
         }
-        .add-cart-btn:hover:not(:disabled) {
-            background: linear-gradient(90deg, var(--verde-mx) 0%, var(--amarillo-mx) 100%);
-            color: var(--rojo-mx);
-        }
-        .go-cart-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1000;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--amarillo-mx) 0%, var(--verde-mx) 100%);
-            color: var(--gris-mx);
-            border: none;
-            padding: 12px 25px;
-            box-shadow: 0 4px 15px rgba(206, 17, 38, 0.15);
-        }
-        .go-cart-btn:hover {
-            background: linear-gradient(90deg, var(--verde-mx) 0%, var(--amarillo-mx) 100%);
-            color: var(--rojo-mx);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(206, 17, 38, 0.25);
-        }
-        .volver-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            z-index: 1000;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--verde-mx) 0%, var(--rojo-mx) 100%);
-            color: var(--blanco-mx);
-            border: none;
-            padding: 12px 25px;
-            box-shadow: 0 4px 15px rgba(206, 17, 38, 0.15);
-        }
-        .volver-btn:hover {
-            background: linear-gradient(90deg, var(--rojo-mx) 0%, var(--verde-mx) 100%);
-            color: var(--amarillo-mx);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(206, 17, 38, 0.25);
-        }
-        .cart-badge {
-            font-size: 0.7rem;
-        }
-        @media (max-width: 991px) {
-            .go-cart-btn, .volver-btn {
-                position: static;
-                margin: 1rem 0 0 0;
-                width: 100%;
-                display: block;
-            }
-            .fixed-btn-container {
-                display: flex;
-                justify-content: space-between;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: var(--blanco-mx);
-                padding: 15px;
-                z-index: 1000;
-                box-shadow: 0 -4px 10px rgba(206, 17, 38, 0.15);
-            }
-            .go-cart-btn, .volver-btn {
-                position: static;
-                margin: 0;
-                width: 48%;
-                display: inline-block;
-            }
-        }
+
+        .float-actions { position: fixed; right:24px; bottom:24px; display:flex; flex-direction:column; gap:10px; z-index:1200; }
         .notification {
             position: fixed;
-            top: 100px;
-            right: 20px;
-            background: var(--rojo-mx);
-            color: var(--blanco-mx);
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(206, 17, 38, 0.18);
-            z-index: 1050;
-            font-weight: 700;
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-            border: 2px solid var(--verde-mx);
+            top:96px;
+            right:20px;
+            background: rgba(0,0,0,0.6);
+            color: var(--text);
+            padding:12px 18px;
+            border-radius:10px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            z-index:1300;
+            transform: translateX(120%);
+            transition: transform .32s ease;
+            border:1px solid rgba(255,255,255,0.04);
         }
-        .notification.show {
-            transform: translateX(0);
+        .notification.show { transform: translateX(0); }
+
+        .modal-content { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); color:var(--text); border-radius:14px; border:1px solid rgba(255,255,255,0.04); }
+        .modal-body img { border-radius:12px; max-width:100%; height:auto; display:block; margin:0 auto; }
+
+        @media (max-width:991px){
+            .product-img { height:140px; }
+            body { padding-top:96px; }
+            .main-wrap { padding:16px; }
+            .float-actions { display:none; }
         }
-        /* Cinta bandera México */
-        .bandera-mx {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 18px;
-            z-index: 2000;
-            display: flex;
-        }
-        .bandera-mx .franja {
-            flex: 1;
-            height: 100%;
-        }
-        .bandera-mx .verde { background: var(--verde-mx);}
-        .bandera-mx .blanco { background: var(--blanco-mx);}
-        .bandera-mx .rojo { background: var(--rojo-mx);}
     </style>
 </head>
 <body>
-    <div class="bandera-mx">
-        <div class="franja verde"></div>
-        <div class="franja blanco"></div>
-        <div class="franja rojo"></div>
-    </div>
-    <?php if (isset($showNotification) && $showNotification): ?>
-        <div class="notification" id="addedNotification"><i class="bi bi-cart-check"></i> Producto agregado al carrito</div>
-    <?php endif; ?>
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm">
-        <div class="container-fluid">
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container main-wrap">
             <a class="navbar-brand" href="index.php">
-                <span class="maggi-mx-logo">
-                    <span class="maggi">Maggi</span><span class="s">S</span><span class="mx">MX</span>
-                </span>
+                <span class="logo-pill"><i class="bi bi-basket2"></i>&nbsp;MaggiSGT</span>
             </a>
-            <a href="carrito.php" class="btn btn-outline-warning position-relative">
-                <i class="bi bi-cart"></i> Carrito
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    <?php echo isset($_SESSION['carrito']) ? count($_SESSION['carrito']) : 0; ?>
-                </span>
-            </a>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <a href="carrito.php" class="btn btn-sm view-btn">
+                    <i class="bi bi-cart"></i>
+                    <span class="badge bg-danger ms-2"><?php echo isset($_SESSION['carrito']) ? count($_SESSION['carrito']) : 0; ?></span>
+                </a>
+            </div>
         </div>
     </nav>
-    <div class="container mt-5">
-        <h1 class="text-center page-title">
-            <i class="bi bi-basket2"></i> Productos Mexicanos
-        </h1>
-        <div class="row g-4">
+
+    <main class="main-wrap">
+        <div class="hero-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h2 class="hero-title">Productos Mexicanos</h2>
+                    <p class="hero-sub">Sabores auténticos de México, seleccionados y listos para tu mesa.</p>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">Total en carrito</small>
+                    <div style="font-weight:800;font-size:1.05rem;"><?php echo isset($_SESSION['carrito']) ? count($_SESSION['carrito']) : 0; ?> ítems</div>
+                </div>
+            </div>
+        </div>
+
+        <?php if (isset($showNotification) && $showNotification): ?>
+            <div class="notification" id="addedNotification"><i class="bi bi-check2-circle"></i> &nbsp; Producto agregado al carrito</div>
+        <?php endif; ?>
+
+        <div class="row row-products row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 mt-3">
             <?php foreach ($productos as $producto): ?>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <div class="product-card p-3">
-                        <div class="product-img mb-3" onclick="mostrarImagenModal('<?php echo htmlspecialchars($producto['imagen']); ?>')" style="cursor:pointer;">
+                <div class="col">
+                    <div class="product-card">
+                        <div class="product-img" onclick="mostrarImagenModal('<?php echo htmlspecialchars($producto['imagen']); ?>')" style="cursor:pointer;">
                             <?php if ($producto['imagen']): ?>
                                 <img src="<?php echo htmlspecialchars($producto['imagen']); ?>" alt="Producto" />
                             <?php else: ?>
-                                <i class="bi bi-image"></i>
+                                <div style="color:var(--muted); font-size:48px;"><i class="bi bi-image"></i></div>
                             <?php endif; ?>
                         </div>
-                        <h5 class="text-center mb-2"><?php echo htmlspecialchars($producto['nombre']); ?></h5>
-                        <p class="text-center text-muted mb-3 fs-5">
-                            <?php echo $producto['precio'] !== "" ? "Q " . number_format($producto['precio'],2) : "<span class='text-secondary'>Próximamente</span>"; ?>
-                        </p>
-                        <form method="post" action="productos_mx.php" class="d-grid">
-                            <input type="hidden" name="producto_id" value="<?php echo $producto['id']; ?>">
-                            <button type="submit" class="btn add-cart-btn" <?php echo $producto['precio'] === "" ? "disabled" : ""; ?>>
-                                <i class="bi bi-cart-plus"></i> Agregar al carrito
-                            </button>
-                        </form>
+
+                        <div>
+                            <h5 class="product-name"><?php echo htmlspecialchars($producto['nombre']); ?></h5>
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="product-price">
+                                    <?php echo $producto['precio'] !== "" ? "Q&nbsp;" . number_format($producto['precio'],2) : "<span class='text-muted'>Próximamente</span>"; ?>
+                                </div>
+                                <div class="text-end" style="max-width:60%;">
+                                    <small class="product-desc"><?php echo htmlspecialchars($producto['descripcion'] ?? ''); ?></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <form method="post" action="productos_mx.php" class="d-grid" style="flex:1">
+                                <input type="hidden" name="producto_id" value="<?php echo $producto['id']; ?>">
+                                <button type="submit" class="add-cart-btn w-100" <?php echo $producto['precio'] === "" ? "disabled" : ""; ?>>
+                                    <i class="bi bi-cart-plus"></i> Agregar
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
+
+    </main>
+
+    <div class="float-actions d-none d-lg-flex">
+        <a href="carrito.php" class="btn add-cart-btn"><i class="bi bi-cart-check"></i>&nbsp; Ver carrito</a>
+        <a href="index.php" class="btn view-btn"><i class="bi bi-arrow-left"></i>&nbsp; Inicio</a>
     </div>
-    <div class="fixed-btn-container d-lg-none">
-        <a href="index.php" class="btn volver-btn">
-            <i class="bi bi-arrow-left"></i> Volver
-        </a>
-        <a href="carrito.php" class="btn go-cart-btn">
-            <i class="bi bi-cart-check"></i> Carrito
-        </a>
-    </div>
-    <div class="d-none d-lg-block">
-        <a href="carrito.php" class="btn go-cart-btn shadow">
-            <i class="bi bi-cart-check"></i> Ir al carrito
-        </a>
-        <a href="index.php" class="btn volver-btn shadow">
-            <i class="bi bi-arrow-left"></i> Volver al inicio
-        </a>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Mostrar notificación de producto agregado
-        document.addEventListener('DOMContentLoaded', function() {
-            const notification = document.getElementById('addedNotification');
-            if (notification) {
-                notification.classList.add('show');
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                    setTimeout(() => {
-                        notification.remove();
-                    }, 300);
-                }, 3000);
-            }
-        });
-    </script>
+
     <!-- Modal para imagen grande -->
     <div class="modal fade" id="imagenModal" tabindex="-1" aria-labelledby="imagenModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-white">
+        <div class="modal-content">
           <div class="modal-body text-center">
-            <img id="imagenModalSrc" src="" alt="Producto grande" style="max-width:100%;max-height:70vh;border-radius:18px;box-shadow:0 4px 24px #ce1126;">
+            <img id="imagenModalSrc" src="" alt="Producto grande" style="max-width:100%;max-height:70vh;">
           </div>
           <div class="modal-footer border-0 justify-content-center">
-            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
+            <button type="button" class="btn view-btn" data-bs-dismiss="modal">
               <i class="bi bi-x-lg"></i> Cerrar
             </button>
           </div>
         </div>
       </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    function mostrarImagenModal(src) {
-        document.getElementById('imagenModalSrc').src = src;
-        var modal = new bootstrap.Modal(document.getElementById('imagenModal'));
-        modal.show();
-    }
+        document.addEventListener('DOMContentLoaded', function() {
+            const notification = document.getElementById('addedNotification');
+            if (notification) {
+                setTimeout(() => notification.classList.add('show'), 80);
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(()=> notification.remove(), 350);
+                }, 3000);
+            }
+        });
+
+        function mostrarImagenModal(src) {
+            if (!src) return;
+            document.getElementById('imagenModalSrc').src = src;
+            var modal = new bootstrap.Modal(document.getElementById('imagenModal'));
+            modal.show();
+        }
     </script>
 </body>
 </html>

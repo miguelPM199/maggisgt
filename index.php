@@ -28,17 +28,22 @@ session_start();
             color: #e8eef1;
             -webkit-font-smoothing:antialiased;
             -moz-osx-font-smoothing:grayscale;
+            /* espacio superior para navbar fijo (escritorio) */
+            padding-top: 72px;
         }
         .navbar {
             background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             border-bottom: 1px solid rgba(255,255,255,0.03);
             backdrop-filter: blur(6px);
+            height: 72px;
+            z-index: 1050; /* que permanezca encima del contenido */
         }
         .navbar-brand {
             font-weight: 900;
             color: var(--accent-1) !important;
             letter-spacing: 1.4px;
             font-size: 1.5rem;
+            margin-top: 0; /* subir logo */
         }
         .btn-outline-* { border-width:2px; }
         .btn-outline-primary, .btn-outline-success {
@@ -46,6 +51,38 @@ session_start();
             border-color: rgba(48, 235, 10, 0.18);
             background: transparent;
         }
+
+        /* MÓVIL: subir logo y controles, mantener la barra fija y dar espacio al contenido */
+        @media (max-width: 575.98px) {
+            /* dar algo más de espacio al body para que el contenido no quede tapado */
+            body {
+                padding-top: calc(72px + 0.75rem);
+            }
+            .navbar {
+                height: auto;
+                padding: 0.5rem 0;
+            }
+            /* centrar y alinear los elementos del navbar sin desplazar hacia abajo */
+            .navbar .container {
+                display: flex;
+                align-items: center;
+                gap: .5rem;
+            }
+            .navbar .container .navbar-brand,
+            .navbar .container .d-flex.ms-auto {
+                transform: none !important;
+                margin: 0 !important;
+                padding: 0;
+            }
+            /* si el botón carrito se superpone, bájalo ligeramente dentro de la navbar en móvil (no al contenido) */
+            .navbar .d-flex.ms-auto .btn {
+                transform: translateY(0); /* mantener en su sitio dentro del navbar */
+            }
+            /* empuja el hero un poco más para evitar solapamiento (opcional) */
+            .hero { padding-top: calc(80px + 0.75rem); }
+        }
+
+        /* resto de estilos existentes */
         .hero {
             padding: 80px 0 36px;
             background: linear-gradient(180deg, rgba(231,200,115,0.02), transparent 40%);

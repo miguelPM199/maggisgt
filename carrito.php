@@ -3,23 +3,11 @@
 
 session_start();
 
-// Simulación de productos en el carrito (puedes reemplazar esto con tu lógica real)
-if (!isset($_SESSION['carrito'])) {
-    $_SESSION['carrito'] = [
-        [
-            "id" => 1,
-            "nombre" => "Producto 1",
-            "precio" => 25.00,
-            "cantidad" => 2
-        ],
-        [
-            "id" => 2,
-            "nombre" => "Producto 2",
-            "precio" => 40.00,
-            "cantidad" => 1
-        ]
-    ];
+// Asegurar que 'carrito' existe y es un array para evitar warnings/errores
+if (!isset($_SESSION['carrito']) || !is_array($_SESSION['carrito'])) {
+    $_SESSION['carrito'] = [];
 }
+
 
 // Actualizar cantidades
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_cart'])) {
