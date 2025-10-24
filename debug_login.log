@@ -1,0 +1,32 @@
+2025-10-22T21:43:29+02:00 Entered login.php - REQUEST_METHOD=GET
+2025-10-22T21:43:29+02:00 Not POST - redirecting
+2025-10-22T21:43:33+02:00 Entered login.php - REQUEST_METHOD=POST
+2025-10-22T21:43:33+02:00 POST raw: {"usuario":"maggisgt","contrasena":"Maggisgt1999"}
+2025-10-22T21:43:33+02:00 Parsed usuario=maggisgt contrasena_length=12
+2025-10-22T21:43:33+02:00 DB user result: {"id":1,"username":"maggisgt","password":"$apr1$zivxh2kg$8czdxD2sDOL0So\/gaP16H.","failed_attempts":0,"locked_until":"2025-10-22 21:56:19"}
+2025-10-22T21:43:33+02:00 User locked_until=2025-10-22 21:56:19
+2025-10-22T23:11:16+02:00 Entered login.php - METHOD=POST
+2025-10-22T23:11:16+02:00 POST raw: {"usuario":"maggisgt","contrasena":"Maggisgt1999"}
+2025-10-22T23:11:16+02:00 Parsed usuario='maggisgt' contrasena_len=12
+2025-10-22T23:11:16+02:00 DB user result: {"id":1,"username":"maggisgt","password":"$apr1$zivxh2kg$8czdxD2sDOL0So\/gaP16H."}
+2025-10-22T23:11:16+02:00 password_verify => false
+2025-10-22T23:11:16+02:00 Password mismatch - redirecting
+2025-10-22T23:11:25+02:00 Entered login.php - METHOD=POST
+2025-10-22T23:11:25+02:00 POST raw: {"usuario":"maggisgt","contrasena":"Maggisgt1999"}
+2025-10-22T23:11:25+02:00 Parsed usuario='maggisgt' contrasena_len=12
+2025-10-22T23:11:25+02:00 DB user result: {"id":1,"username":"maggisgt","password":"$apr1$zivxh2kg$8czdxD2sDOL0So\/gaP16H."}
+2025-10-22T23:11:25+02:00 password_verify => false
+2025-10-22T23:11:25+02:00 Password mismatch - redirecting
+2025-10-22T23:13:56+02:00 Entered login.php - METHOD=POST
+2025-10-22T23:13:56+02:00 POST raw: {"usuario":"maggisgt","contrasena":"Maggisgt1999"}
+2025-10-22T23:13:56+02:00 Parsed usuario='maggisgt' contrasena_len=12
+2025-10-22T23:13:56+02:00 DB user result: {"id":1,"username":"maggisgt","password":"$apr1$zivxh2kg$8czdxD2sDOL0So\/gaP16H."}
+2025-10-22T23:13:56+02:00 password_verify => false
+2025-10-22T23:13:56+02:00 Password mismatch - redirecting
+2025-10-22T23:20:48+02:00 Entered login.php - METHOD=POST
+2025-10-22T23:20:48+02:00 POST raw: {"usuario":"maggisgt","contrasena":"Maggisgt1999"}
+2025-10-22T23:20:48+02:00 Parsed usuario='maggisgt' contrasena_len=12
+2025-10-22T23:20:48+02:00 DB user result: {"id":1,"username":"maggisgt","password":"$apr1$zivxh2kg$8czdxD2sDOL0So\/gaP16H."}
+2025-10-22T23:20:48+02:00 password_verify => true
+2025-10-22T23:20:48+02:00 Login successful - redirecting
+2025-10-22T23:20:48+02:00 Password mismatch - redirecting

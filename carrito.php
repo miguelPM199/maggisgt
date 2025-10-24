@@ -54,6 +54,46 @@ if (isset($_GET['test_curl'])) {
     exit;
 }
 
+// Prueba de conexión con Recurrente
+if (isset($_GET['test_recurrente'])) {
+    $endpoint = 'https://api.recurrente.com';
+    $host = parse_url($endpoint, PHP_URL_HOST);
+    echo "<h3>Host: " . htmlspecialchars($host) . "</h3>";
+
+    // DNS
+    $resolved = gethostbyname($host);
+    echo "gethostbyname: " . htmlspecialchars($resolved) . "<br>";
+    echo "<pre>dns_get_record: ";
+    var_export(dns_get_record($host));
+    echo "</pre>";
+
+    // cURL verbose -> archivo
+    $verboseFile = __DIR__ . '/debug_recurrente_verbose.log';
+    @unlink($verboseFile);
+    $ch = curl_init($endpoint);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['test'=>1]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+    curl_setopt($ch, CURLOPT_VERBOSE, true);
+    $fp = fopen($verboseFile, 'a+');
+    curl_setopt($ch, CURLOPT_STDERR, $fp);
+
+    $resp = curl_exec($ch);
+    $err = curl_error($ch);
+    $info = curl_getinfo($ch);
+    curl_close($ch);
+    if ($fp) fclose($fp);
+
+    echo "<h4>cURL info</h4><pre>" . htmlspecialchars(print_r($info, true)) . "</pre>";
+    echo "<h4>cURL error</h4><pre>" . htmlspecialchars($err) . "</pre>";
+    echo "<h4>Response</h4><pre>" . htmlspecialchars($resp) . "</pre>";
+    echo "<h4>Verbose log (last 2000 chars)</h4><pre>" . htmlspecialchars(substr(file_get_contents($verboseFile) ?: '', -2000)) . "</pre>";
+    exit;
+}
+
 // Calcular total
 $total = 0;
 foreach ($_SESSION['carrito'] as $item) {
@@ -158,9 +198,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pagar_personalizado']
         $mensaje_error = "Por favor, completa todos los campos obligatorios.";
     }
 }
-
-// URL de PayPal (reemplaza con tu enlace real de PayPal)
-$paypal_url = "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=tu-correo@paypal.com&currency_code=GTQ&amount=" . number_format($total, 2, '.', '') . "&item_name=Compra+MaggiSGT";
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -200,48 +237,10 @@ $paypal_url = "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=tu-cor
             box-shadow: 0 4px 24px rgba(255, 174, 0, 0.09);
         }
         .btn-checkout {
-            font-size: 1.2rem;
-            font-weight: 600;
-            border-radius: 10px;
-            padding: 0.75rem 2rem;
-        }
-        .best-worlds {
-            font-size: 1.3rem;
-            font-weight: 900;
-            color: #111;
-            text-align: center;
-            letter-spacing: 1px;
-            text-shadow:
-                2px 2px 0 #bbb,
-                4px 4px 0 #ccc,
-                6px 6px 2px #888,
-                0 2px 12px #0002;
-            background: linear-gradient(90deg, #fff 60%, #eee 100%);
-            border-radius: 16px;
-            box-shadow: 0 6px 24px #0002, 0 2px 0 #fff inset;
-            padding: 1.1rem 2rem;
-            display: inline-block;
-            margin: 0 auto 1.5rem auto;
-        }
-        .empty-cart {
-            text-align: center;
-            color: #bbb;
-            font-size: 1.3rem;
-            margin-top: 3rem;
-        }
-        .paypal-btn {
-            background: #ffc439;
-            color: #222;
-            border: none;
-            font-weight: 600;
-            border-radius: 10px;
-            padding: 0.75rem 2rem;
-            transition: background 0.2s;
-        }
-        .paypal-btn:hover {
-            background: #ffb347;
             color: #111;
         }
+        .badge-secure { background:#198754; color:#fff; padding:6px 10px; border-radius:8px; display:inline-block; }
+        .wh-btn { background:#25D366; color:#fff; border:none; border-radius:10px; padding:10px 14px; font-weight:700; display:block; text-decoration:none; text-align:center; }
     </style>
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -343,9 +342,26 @@ $paypal_url = "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=tu-cor
                         <span class="fw-bold fs-5">Q <?php echo number_format($total, 2); ?></span>
                     </div>
                     <?php if (!empty($_SESSION['carrito'])): ?>
-                        <a href="<?php echo $paypal_url; ?>" target="_blank" class="paypal-btn w-100 mb-2">
-                            <i class="bi bi-paypal"></i> Finalizar compra con PayPal
-                        </a>
+
+                        <!-- Botón WhatsApp: "Forma segura pago con tarjeta Credito/Debito" (reemplaza PayPal) -->
+                        <?php
+                            $store_phone = '50259252725';
+                            $wa_msg = "Buena tarde, compraré estos productos:\n";
+                            foreach ($_SESSION['carrito'] as $item) {
+                                $wa_msg .= "- {$item['nombre']} x{$item['cantidad']} (Q " . number_format($item['precio'], 2) . ")\n";
+                            }
+                            $wa_msg .= "\nTotal: Q " . number_format($total, 2) . "\n\n";
+                            $wa_msg .= "Por favor envíenme el link de pago de Recurrente para cancelar con tarjeta. Gracias.";
+                            $whatsapp_url = "https://wa.me/{$store_phone}?text=" . rawurlencode($wa_msg);
+                        ?>
+                        <div class="mb-3 text-center">
+                            <div class="badge-secure mb-2">Forma segura de pagar</div>
+                            <a href="<?php echo htmlspecialchars($whatsapp_url); ?>" target="_blank" rel="noopener" class="wh-btn mb-2">
+                                <i class="bi bi-whatsapp"></i>&nbsp; Enviar WhatsApp — Solicitar link de pago seguro
+                            </a>
+                            <small class="text-muted d-block">Paga con tarjeta de forma segura: recibe un link de pago oficial y evita compartir datos sensibles por chat.</small>
+                        </div>
+
                         <form method="post" class="mt-3">
                             <h5 class="mb-2"><i class="bi bi-person-circle"></i> Tus datos para la entrega</h5>
                             <!-- Google Sign-In -->
@@ -388,9 +404,8 @@ $paypal_url = "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=tu-cor
                                 <label for="metodo_pago" class="form-label">Método de pago</label>
                                 <select class="form-select" id="metodo_pago" name="metodo_pago" required>
                                     <option value="">Selecciona un método</option>
-                                    <option value="PayPal">PayPal</option>
                                     <option value="Contra entrega">Pago contra entrega</option>
-                                    <option value="Tarjeta">Tarjeta de débito/crédito</option>
+                                    <option value="Tarjeta">Tarjeta de débito/crédito-en el boton de arroba whatsapp se genera el linnk</option>
                                 </select>
                             </div>
                             <button type="submit" name="pagar_personalizado" class="btn btn-success w-100">

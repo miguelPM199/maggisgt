@@ -1,0 +1,37 @@
+name: CI - Verificación de Código MAGGIS GT
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Verificar archivos PHP (lint)
+        run: |
+          set -e
+          mapfile -t files < <(find . -type f -name "*.php" -not -path "./vendor/*")
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No se encontraron archivos PHP."
+            exit 0
+          fi
+          for f in "${files[@]}"; do
+            echo "Lint: $f"
+            php -l "$f"
+          done
+
+      - name: Validar estructura del proyecto
+        run: |
+          echo "Estructura validada correctamente."

@@ -1,11 +1,9 @@
-
 <?php
-
 session_start();
 
-// Seguridad: solo admin puede entrar
-if (!isset($_SESSION["usuario"]) || $_SESSION["usuario"] !== "admin") {
-    header("Location: ../index.php");
+// Forzar que la sesión esté validada: si no, ir al login
+if (empty($_SESSION['user_id']) || empty($_SESSION['usuario']) || $_SESSION['usuario'] !== 'admin') {
+    header("Location: ../login.php");
     exit;
 }
 
@@ -74,7 +72,6 @@ function generate_description($name, $tipo) {
 }
 
 // --- Manejo de imagen drag & drop y guardado en /uploads ---
-// (consolidado para los formularios; si se sube imagen se añade a $_POST['imagen'])
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
         $ext = pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION);
@@ -107,7 +104,7 @@ if (isset($_POST['accion_producto']) && $_POST['accion_producto'] === 'agregar' 
         $stmt->bind_param("sdss", $nombre, $precio, $imagen, $descripcion);
         $stmt->execute();
         $stmt->close();
-        header("Location: index.php?tab=gt");
+        header("Location: principall.php?tab=gt");
         exit;
     }
     if ($tipo === 'mx') {
@@ -115,7 +112,7 @@ if (isset($_POST['accion_producto']) && $_POST['accion_producto'] === 'agregar' 
         $stmt->bind_param("sdss", $nombre, $precio, $imagen, $descripcion);
         $stmt->execute();
         $stmt->close();
-        header("Location: index.php?tab=mx");
+        header("Location: principall.php?tab=mx");
         exit;
     }
 }
@@ -134,7 +131,7 @@ if (isset($_POST['accion_gt'])) {
         $stmt->execute();
         $stmt->close();
     }
-    header("Location: index.php?tab=gt");
+    header("Location: principall.php?tab=gt");
     exit;
 }
 
@@ -152,7 +149,7 @@ if (isset($_POST['accion_mx'])) {
         $stmt->execute();
         $stmt->close();
     }
-    header("Location: index.php?tab=mx");
+    header("Location: principall.php?tab=mx");
     exit;
 }
 
@@ -227,7 +224,16 @@ $promociones = $mysqli->query("SELECT * FROM promociones")->fetch_all(MYSQLI_ASS
 </head>
 <body class="bg-light">
 <div class="container py-4">
-    <h2 class="mb-4">Panel de Administración</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Panel de Administración</h2>
+        <div>
+            <span class="me-2">Conectado como: <strong><?php echo htmlspecialchars($_SESSION['usuario']); ?></strong></span>
+            <form method="post" action="logout.php" style="display:inline;">
+                <button class="btn btn-outline-danger btn-sm" type="submit">Cerrar sesión</button>
+            </form>
+        </div>
+    </div>
+
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a class="nav-link <?php if($tab==='productos') echo 'active'; ?>" href="?tab=productos">Productos</a>

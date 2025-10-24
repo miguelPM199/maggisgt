@@ -6,199 +6,163 @@ session_start();
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MaggiSGT - Inicio</title>
+    <title>MaggiSGT — Inicio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
+        :root{
+            --accent-1: #e7c873;
+            --accent-2: #f09819;
+            --bg-dark-1: #0f4eecff;
+            --bg-dark-2: #0f4eecff;
+            --panel: rgba(19, 232, 97, 0.04);
+            --glass: rgba(197, 42, 42, 0.06);
+        }
+        html,body{height:100%}
         body {
-            padding-top: 60px;
-            background: linear-gradient(135deg, #1e2022 0%, #232526 100%);
-            min-height: 100vh;
-            color: #fff !important;
+            margin:0;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: linear-gradient(135deg, #eb72d9ff 0%, #659ed6ff 50%, #232526 100%);
+            color: #e8eef1;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
         }
         .navbar {
-            background: linear-gradient(90deg, #232526 0%, #414345 100%) !important;
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            backdrop-filter: blur(6px);
         }
         .navbar-brand {
-            font-weight: 800;
-            color: #e7c873 !important;
-            letter-spacing: 2px;
-            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent-1) !important;
+            letter-spacing: 1.4px;
+            font-size: 1.5rem;
         }
-        .btn-outline-success, .btn-outline-primary, .btn-outline-danger, .btn-outline-warning, .btn-outline-secondary {
-            border-width: 2px;
-            color: #fff !important;
-            border-color: #e7c873;
+        .btn-outline-* { border-width:2px; }
+        .btn-outline-primary, .btn-outline-success {
+            color: var(--accent-1);
+            border-color: rgba(48, 235, 10, 0.18);
+            background: transparent;
         }
-        .btn-outline-success:hover,
-        .btn-outline-primary:hover,
-        .btn-outline-danger:hover,
-        .btn-outline-warning:hover,
-        .btn-outline-secondary:hover {
-            background: #e7c873 !important;
-            color: #232526 !important;
+        .hero {
+            padding: 80px 0 36px;
+            background: linear-gradient(180deg, rgba(231,200,115,0.02), transparent 40%);
         }
-        .dropdown-menu {
-            min-width: 300px;
+        .hero-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(231, 200, 115, 0.18);
-            background: #232526;
+            padding: 28px;
+            box-shadow: 0 20px 50px rgba(2,6,23,0.6);
+            border: 1px solid rgba(231,200,115,0.06);
+        }
+        .hero-title {
             color: #fff;
-        }
-        .dropdown-menu .form-label, .dropdown-menu input {
-            color: #fff;
-        }
-        .dropdown-menu .btn-primary {
-            background: linear-gradient(90deg, #e7c873 0%, #f09819 100%);
-            border: none;
-            color: #232526;
-            font-weight: 700;
-        }
-        .dropdown-menu .btn-primary:hover {
-            background: linear-gradient(90deg, #f09819 0%, #e7c873 100%);
-            color: #232526;
-        }
-        .btn {
-            font-weight: 600;
-            letter-spacing: 1px;
-            color: #fff !important;
-        }
-        .btn-primary,
-        .btn-secondary,
-        .btn-success,
-        .btn-danger,
-        .btn-warning {
-            background: linear-gradient(90deg, #e7c873 0%, #f09819 100%) !important;
-            border: none;
-            color: #232526 !important;
-        }
-        .btn-primary:hover,
-        .btn-secondary:hover,
-        .btn-success:hover,
-        .btn-danger:hover,
-        .btn-warning:hover {
-            background: linear-gradient(90deg, #f09819 0%, #e7c873 100%) !important;
-            color: #232526 !important;
-        }
-        .btn-outline-primary {
-            color: #fff !important;
-            border-color: #e7c873;
-        }
-        .btn-outline-primary:hover {
-            background: #e7c873 !important;
-            color: #232526 !important;
-        }
-        .btn-outline-secondary {
-            color: #fff !important;
-            border-color: #e7c873;
-        }
-        .btn-outline-secondary:hover {
-            background: #e7c873 !important;
-            color: #232526 !important;
-        }
-        .badge.bg-danger {
-            background: linear-gradient(90deg, #ff5858 0%, #f09819 100%);
-            color: #fff;
-        }
-        h1, h4, .form-label, .form-text, label, .navbar, .navbar-brand, .dropdown-menu, .dropdown-menu .form-label, .dropdown-menu input, .dropdown-menu .btn-primary, .btn, .btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-warning {
-            color: #fff !important;
-        }
-        .btn, .dropdown-menu {
-            box-shadow: 0 2px 8px rgba(231, 200, 115, 0.07);
+            font-weight:800;
+            letter-spacing:1px;
         }
         .carousel-inner img {
-            border-radius: 18px;
-            box-shadow: 0 8px 32px rgba(231, 200, 115, 0.15);
-        }
-        .btn:focus, .form-control:focus {
-            box-shadow: 0 0 0 0.2rem rgba(231, 200, 115, 0.25);
-        }
-        .mb-4 {
-            margin-bottom: 2rem !important;
-        }
-        .fs-5 {
-            font-size: 1.25rem !important;
-        }
-        /* Footer profesional */
-        footer {
-            background: linear-gradient(90deg,#232526 0%,#414345 100%);
-            color: #e7c873;
-            text-align: center;
-            font-weight: 600;
-            letter-spacing: 1px;
-            font-size: 1.1rem;
-            box-shadow: 0 -2px 16px #0004;
-        }
-        /* Mejoras responsive */
-        @media (max-width: 991.98px) {
-            .row.g-3.mb-4 > div[class^="col-"] {
-                flex: 0 0 50%;
-                max-width: 50%;
-                margin-bottom: 1rem;
-            }
+            border-radius: 12px;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.6);
+            width:100%;
+            height: 18cm;
+            object-fit: cover;
         }
         @media (max-width: 575.98px) {
-            .row.g-3.mb-4 > div[class^="col-"] {
-                flex: 0 0 100%;
-                max-width: 100%;
-                margin-bottom: 1rem;
-            }
-            .btn.fs-5, .btn.py-4 {
-                font-size: 1.4rem !important;
-                padding-top: 1.5rem !important;
-                padding-bottom: 1.5rem !important;
-            }
-            h1 {
-                font-size: 2rem !important;
-            }
+            .carousel-inner img { height: 8cm; }
+            .hero { padding-top: 60px; }
         }
-        /* Botones más grandes en móvil */
-        .btn.fs-5, .btn.py-4 {
-            font-size: 1.1rem;
+        .feature-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius: 12px;
+            padding:16px;
+            height:100%;
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+            border:1px solid rgba(214, 36, 36, 0.02);
         }
+        .feature-card .icon { font-size:26px; }
+        .cta {
+            background: linear-gradient(90deg,#fff8ed 0%, #fff3e8 100%);
+            color:#2b2b2b;
+            border-radius:12px;
+            padding:18px;
+            box-shadow: 0 10px 36px rgba(240,150,40,0.06);
+        }
+        footer {
+            background: linear-gradient(90deg,#0b0c0d 0%, #141516 100%);
+            color: rgba(255,255,255,0.65);
+            text-align:center;
+            padding:18px 0;
+            margin-top:40px;
+            font-weight:600;
+        }
+        .badge-cart {
+            background: linear-gradient(90deg,#ff5f5f,#ffb86b);
+            color:#111;
+            font-weight:700;
+            border-radius:999px;
+            padding:4px 8px;
+            font-size:0.85rem;
+        }
+        .showcase-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:20px; }
+        @media (max-width:991px) { .showcase-grid{grid-template-columns:1fr} }
+        .glass {
+            background: rgba(255,255,255,0.03);
+            border-radius:12px;
+            padding:10px;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+        .dropdown-menu.login-dropdown {
+            min-width: 320px;
+            border-radius:12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+            border:1px solid rgba(218, 20, 20, 0.02);
+            box-shadow: 0 10px 30px rgba(2,6,23,0.5);
+        }
+        .form-text.text-warning { color: #f2b64a !important; }
     </style>
 </head>
 <body>
-    <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-        <div class="container-fluid">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
             <a class="navbar-brand" href="#">MaggiSGT</a>
-            <div class="d-flex ms-auto align-items-center">
-                <!-- Carrito -->
-                <a href="carrito.php" class="btn btn-outline-success me-3 position-relative">
-                    <i class="bi bi-cart"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        <?php echo isset($_SESSION['carrito']) ? count($_SESSION['carrito']) : 0; ?>
-                    </span>
+            <div class="d-flex ms-auto align-items-center gap-3">
+                <a href="carrito.php" class="btn btn-sm btn-outline-success position-relative d-flex align-items-center">
+                    <i class="bi bi-cart me-2"></i>
+                    <span class="me-1">Carrito</span>
+                    <span class="badge-cart ms-2"><?php echo isset($_SESSION['carrito']) ? count($_SESSION['carrito']) : 0; ?></span>
                 </a>
-                <!-- Login -->
+
                 <div class="dropdown">
-                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="loginDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        Admin
+                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" id="loginDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle me-1"></i> Admin
                     </button>
-                    <div class="dropdown-menu dropdown-menu-end p-4 shadow" aria-labelledby="loginDropdown">
+                    <div class="dropdown-menu dropdown-menu-end p-4 login-dropdown" aria-labelledby="loginDropdown">
                         <?php
                             $usuario_temp = $_SESSION["usuario_temp"] ?? "";
                             if (isset($_SESSION["login_error"])): ?>
-                            <div class="alert alert-danger py-1">
+                            <div class="alert alert-danger py-1 mb-2">
                                 <?php
-                                    echo $_SESSION["login_error"];
+                                    echo htmlspecialchars($_SESSION["login_error"]);
                                     unset($_SESSION["login_error"]);
                                 ?>
                             </div>
                         <?php endif; ?>
-                        <form method="post" action="login.php">
-                            <div class="mb-3">
-                                <label for="usuario" class="form-label">Usuario</label>
-                                <input type="text" class="form-control" id="usuario" name="usuario" required value="<?php echo htmlspecialchars($usuario_temp); ?>">
+                        <form method="post" action="login.php" novalidate>
+                            <div class="mb-2">
+                                <label for="usuario" class="form-label small mb-1">Usuario</label>
+                                <input type="text" class="form-control form-control-sm" id="usuario" name="usuario" required value="<?php echo htmlspecialchars($usuario_temp); ?>">
                             </div>
-                            <div class="mb-3">
-                                <label for="contrasena" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                            <div class="mb-2">
+                                <label for="contrasena" class="form-label small mb-1">Contraseña</label>
+                                <input type="password" class="form-control form-control-sm" id="contrasena" name="contrasena" required>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Ingresar</button>
-                            <div class="form-text mt-2 text-center text-warning">
+                            <div class="form-text mt-2 text-warning text-center">
                                 Solo para administrador
                             </div>
                         </form>
@@ -208,75 +172,140 @@ session_start();
         </div>
     </nav>
 
-    <!-- Contenido principal -->
-    <div class="container mt-5">
-        <h1 class="mb-4">Bienvenido a MaggiSGT</h1>
-        <div class="row g-3 mb-4">
-            <div class="col-md-2 col-6">
-                <a href="quienes_somos.php" class="btn w-100 h-100 py-4 fs-5" style="background:linear-gradient(90deg,#e7c873 0%, #f09819 100%)!important;">
-                    Quiénes somos
-                </a>
-            </div>
-            <div class="col-md-2 col-6">
-                <a href="contacto.php" class="btn w-100 h-100 py-4 fs-5" style="background:linear-gradient(90deg,#e7c873 0%, #f09819 100%)!important;">
-                    Contacto
-                </a>
-            </div>
-            <div class="col-md-2 col-6">
-                <a href="productos_gt.php" class="btn w-100 h-100 py-4 fs-5" style="background:linear-gradient(90deg,#e7c873 0%, #f09819 100%)!important;">
-                    Productos Guatemaltecos
-                </a>
-            </div>
-            <div class="col-md-2 col-6">
-                <a href="productos_mx.php" class="btn w-100 h-100 py-4 fs-5" style="background:linear-gradient(90deg,#e7c873 0%, #f09819 100%)!important;">
-                    Productos Mexicanos
-                </a>
-            </div>
-            <div class="col-md-2 col-6">
-                <a href="promociones.php" class="btn w-100 h-100 py-4 fs-5" style="background:linear-gradient(90deg,#b80000 0%,#ff2e2e 100%)!important;color:#fff;font-weight:800;border:none;">
-                    2x1
-                </a>
-            </div>
-        </div>
-        <!-- Carrusel de imágenes -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <h4 class="mb-3">Galería</h4>
-                <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                    </div>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" class="d-block w-100" alt="Producto 1">
+    <!-- Hero -->
+    <header class="hero">
+        <div class="container">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <div class="hero-card">
+                        <h1 class="hero-title display-6">MaggiSGT — Productos auténticos de Guatemala y México</h1>
+                        <p class="lead text-white mb-3">Encuentra sabores seleccionados, promociones y envíos confiables. Navega por nuestras categorías o pide tu link de pago seguro.</p>
+
+                        <div class="d-flex gap-2 flex-wrap">
+                            <a href="productos_gt.php" class="btn btn-lg" style="background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:#111;font-weight:800;border-radius:10px;">Productos GT</a>
+                            <a href="productos_mx.php" class="btn btn-outline-success btn-lg">Productos MX</a>
+                            <a href="promociones.php" class="btn btn-outline-primary btn-lg">Promociones 2x1</a>
                         </div>
-                        <div class="carousel-item">
-                            <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=800&q=80" class="d-block w-100" alt="Producto 2">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" class="d-block w-100" alt="Producto 3">
+
+                        <div class="mt-4 glass">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <strong class="text-white">Envío rápido</strong>
+                                    <div class="text-white small">Logística optimizada a tu ciudad.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong class="text-white">Pago seguro</strong>
+                                    <div class="text-white small">Link de pago y opción</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Anterior</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Siguiente</span>
-                    </button>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="hero-card">
+                        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-indicators mb-3">
+                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                            </div>
+                            <div class="carousel-inner rounded">
+                                <?php
+                                $imgs = ['1ra.jpeg', 'maggisgt.jpeg', '2dos.jpeg'];
+                                $first = true;
+                                foreach ($imgs as $file) {
+                                    $diskPath = __DIR__ . '/assets/img/' . $file;
+                                    $webPath  = 'assets/img/' . $file;
+                                    if (!file_exists($diskPath)) {
+                                        $webPath = 'https://via.placeholder.com/1200x500?text=Imagen+no+disponible';
+                                    }
+                                    echo '<div class="carousel-item' . ($first ? ' active' : '') . '">';
+                                    echo '<img src="' . htmlspecialchars($webPath) . '" class="d-block w-100" alt="' . htmlspecialchars($file) . '">';
+                                    echo '</div>';
+                                    $first = false;
+                                }
+                                ?>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Siguiente</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
 
-    <!-- Footer profesional -->
-    <footer class="mt-5 py-4">
-        &copy; <?php echo date('Y'); ?> MaggiSGT. Todos los derechos reservados. Desarrollado por MaggiSGT.
+    <!-- Showcase -->
+    <main class="container mt-5">
+        <section class="showcase-grid mb-4">
+            <div class="feature-card">
+                <div class="icon">🍃</div>
+                <h5 class="card-title">Calidad Garantizada</h5>
+                <p class="card-text">Productos seleccionados por su sabor y autenticidad.</p>
+                <a href="productos_gt.php" class="link-more mt-auto" style="color:var(--accent-1);font-weight:700;text-decoration:none;">Ver productos →</a>
+            </div>
+            <div class="feature-card">
+                <div class="icon">⚡</div>
+                <h5 class="card-title">Entregas Rápidas</h5>
+                <p class="card-text">Seguimiento y tiempos optimizados para tu comodidad.</p>
+                <a href="contacto.php" class="link-more mt-auto" style="color:var(--accent-1);font-weight:700;text-decoration:none;">Contactar soporte →</a>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🔒</div>
+                <h5 class="card-title">Pago Seguro</h5>
+                <p class="card-text">Link de pago y alternativas seguras para tus compras.</p>
+                <a href="promociones.php" class="link-more mt-auto" style="color:var(--accent-1);font-weight:700;text-decoration:none;">Promociones →</a>
+            </div>
+        </section>
+
+        <div class="row align-items-start gap-4">
+            <div class="col-lg-8">
+                <div class="glass p-3">
+                    <h4 class="mb-3">Testimonios</h4>
+                    <blockquote class="blockquote">
+                        <p class="mb-1">"Excelente atención y productos de primera. Llegó rápido y todo muy bien empacado."</p>
+                        <footer class="blockquote-footer">Cliente feliz</footer>
+                    </blockquote>
+                    <hr>
+                    <blockquote class="blockquote">
+                        <p class="mb-1">"Los productos son de buena calidad, todo muy bien excelente."</p>
+                        <footer class="blockquote-footer">Stefany</footer>
+                    </blockquote>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="cta">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="small text-muted">Oferta</div>
+                            <h5 class="mb-0">2x1 en Productos Seleccionados</h5>
+                        </div>
+                        <div class="badge bg-warning text-dark">Mes</div>
+                    </div>
+                    <p class="small mb-3">Aprovecha la promoción del mes y solicita tu link de pago seguro ahora.</p>
+                    <a href="promociones.php" class="btn" style="background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:#111;font-weight:800;border-radius:8px;">Ver ofertas</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="productos_gt.php" class="btn btn-outline-success me-2">Ver GT</a>
+            <a href="productos_mx.php" class="btn btn-outline-primary">Ver MX</a>
+        </div>
+    </main>
+
+    <footer class="mt-5">
+        &copy; <?php echo date('Y'); ?> MaggiSGT — Todos los derechos reservados.
     </footer>
-    <!-- Bootstrap JS para dropdown y carrusel -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
