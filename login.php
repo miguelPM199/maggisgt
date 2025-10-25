@@ -9,11 +9,11 @@ $baseDir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 $baseUrl = $scheme . '://' . $host . $baseDir . '/';
 
 // Parámetros de conexión (igual que productos_mx)
-$dbHost = "localhost";
-$dbUser = "root";
-$dbPass = "";
+$dbHost = "178.128.67.133";
+$dbUser = "usrmaggisgt";
+$dbPass = "mipass";
 $dbName = "maggisgt";
-$dbPort = 3307;
+$dbPort = 3306;
 
 // Conectar con mysqli
 $mysqli = new mysqli($dbHost, $dbUser, $dbPass, $dbName, $dbPort);

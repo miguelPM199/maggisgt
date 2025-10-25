@@ -7,8 +7,8 @@ if (empty($_SESSION['user_id']) || empty($_SESSION['usuario']) || $_SESSION['usu
     exit;
 }
 
-// Conexión a la base de datos MySQL en el puerto 3307
-$mysqli = new mysqli("localhost", "root", "", "maggisgt", 3307);
+// Conexión a la base de datos MySQL en el puerto 3306
+$mysqli = new mysqli("178.128.67.133", "usrmaggisgt", "mipass", "maggisgt", 3306);
 if ($mysqli->connect_errno) {
     die("Error de conexión a MySQL: " . $mysqli->connect_error);
 }
