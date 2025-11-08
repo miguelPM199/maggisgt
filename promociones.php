@@ -11,6 +11,9 @@ if ($mysqli->connect_errno) {
 // Obtener productos en promoción desde la tabla real
 $promos = $mysqli->query("SELECT * FROM promociones")->fetch_all(MYSQLI_ASSOC);
 
+// mostrar notificación si viene added=1 en la URL
+$showNotification = (isset($_GET['added']) && $_GET['added'] === '1');
+
 // Agregar al carrito
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
     $producto_id = intval($_POST['producto_id']);
@@ -43,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
             ];
         }
     }
-    header("Location: promociones.php");
+    header("Location: promociones.php?added=1");
     exit;
 }
 ?>

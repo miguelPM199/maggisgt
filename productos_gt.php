@@ -296,7 +296,7 @@ $productos = $mysqli->query("SELECT * FROM productos_gt")->fetch_all(MYSQLI_ASSO
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <h2 class="hero-title">Productos Guatemaltecos</h2>
-                    <p class="hero-sub">Sabores auténticos, seleccionados y listos para tu mesa. Compra fácil y recibe rápido.</p>
+                    <p class="hero-sub">productos auténticos, seleccionados y elegantes. Compra fácil y recibe rápido.</p>
                 </div>
                 <div class="text-end">
                     <small class="text-muted">Total en carrito</small>
