@@ -22,8 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
     $stmt->close();
     // Validación segura para evitar error si $prod es null o no tiene precio
     if (is_array($prod) && isset($prod['precio']) && $prod['precio'] !== "") {
-        // Calcular precio promocional (65% más)
-        $precio_promocion = round($prod['precio'] * 1.65, 2);
+        // Usar el precio tal cual está guardado en la tabla promociones (no multiplicar aquí)
+        $precio_promocion = round(floatval($prod['precio']), 2);
         $encontrado = false;
         if (!isset($_SESSION['carrito'])) $_SESSION['carrito'] = [];
         foreach ($_SESSION['carrito'] as &$item) {
@@ -168,6 +168,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
         }
         .product-img img { width:100%; height:100%; object-fit:cover; display:block; }
 
+        /* --- ADICIONAL: imagenes ampliables --- */
+        .product-img img {
+            cursor: zoom-in; /* indica que se puede ampliar */
+            transition: transform .22s ease;
+        }
+        .product-img img:hover {
+            transform: scale(1.02);
+        }
+
+        /* modal de imagen */
+        .img-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            align-items: center;
+            justify-content: center;
+            z-index: 2200;
+            padding: 24px;
+        }
+        .img-modal.show { display: flex; }
+        .img-modal img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+        .img-modal .img-close {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            color: #fff;
+            font-size: 28px;
+            line-height: 28px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            padding: 6px 10px;
+        }
+
         .product-name {
             font-weight:800;
             color:var(--text);
@@ -272,7 +312,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
         <div class="row g-4">
             <?php foreach ($promos as $producto): ?>
                 <?php
-                    $precio_promocion = (isset($producto['precio']) && $producto['precio'] !== "") ? round($producto['precio'] * 1.65, 2) : "";
+                    // Usar el precio tal cual está guardado en la tabla promociones (no volver a multiplicar)
+                    $precio_promocion = (isset($producto['precio']) && $producto['precio'] !== "") ? round(floatval($producto['precio']), 2) : "";
                 ?>
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                     <div class="product-card">
@@ -327,5 +368,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
             }
         });
     </script>
+
+    <!-- --- ADICIONAL: modal para ampliar imagenes --- -->
+    <div id="imgModal" class="img-modal" aria-hidden="true">
+        <button class="img-close" type="button" aria-label="Cerrar">&times;</button>
+        <img id="imgModalImg" src="" alt="Imagen ampliada">
+    </div>
+
+    <script>
+        (function(){
+            const modal = document.getElementById('imgModal');
+            const modalImg = document.getElementById('imgModalImg');
+            const btnClose = modal.querySelector('.img-close');
+
+            function openImg(src, alt) {
+                modalImg.src = src;
+                modalImg.alt = alt || '';
+                modal.classList.add('show');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+                // focus for accessibility
+                btnClose.focus();
+            }
+            function closeImg() {
+                modal.classList.remove('show');
+                modalImg.src = '';
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }
+
+            // Delegación: todos los imgs dentro de .product-img
+            document.querySelectorAll('.product-img img').forEach(img => {
+                img.addEventListener('click', function(e){
+                    // si existe data-full usarla (versión grande), sino usar src
+                    const src = img.getAttribute('data-full') || img.src;
+                    openImg(src, img.alt || img.getAttribute('title') || '');
+                });
+            });
+
+            // cerrar al hacer click fuera de la imagen
+            modal.addEventListener('click', function(e){
+                if (e.target === modal || e.target === btnClose) closeImg();
+            });
+
+            // cerrar con ESC
+            document.addEventListener('keydown', function(e){
+                if (e.key === 'Escape' && modal.classList.contains('show')) closeImg();
+            });
+        })();
+    </script>
 </body>
-</html>
+</html></div>
